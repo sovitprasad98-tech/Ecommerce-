@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://zapupi.com/single-html-web-kit.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
@@ -184,6 +185,56 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);ove
   .cart-sidebar{width:100%}
   .main{padding:78px 14px 50px}
 }
+
+/* ── CHECKOUT MODAL ── */
+.checkout-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:600;opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;justify-content:center;padding:16px}
+.checkout-overlay.open{opacity:1;visibility:visible}
+.checkout-modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:420px;overflow:hidden;animation:cmIn .3s cubic-bezier(.16,1,.3,1) both}
+@keyframes cmIn{from{transform:scale(.93) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.cm-head{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cm-head h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--white);display:flex;align-items:center;gap:8px}
+.cm-head h3 i{color:var(--blue)}
+.cm-close{width:30px;height:30px;border:1px solid var(--border);background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:.85rem;transition:color .2s}
+.cm-close:hover{color:var(--white)}
+.cm-body{padding:20px 22px;max-height:60vh;overflow-y:auto}
+.cm-items{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.cm-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.cm-item-img{width:48px;height:36px;border-radius:6px;object-fit:cover;background:rgba(26,107,255,.1);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:.8rem;overflow:hidden}
+.cm-item-img img{width:100%;height:100%;object-fit:cover}
+.cm-item-name{flex:1;font-size:.82rem;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-item-price{font-size:.82rem;color:var(--blue-light);font-weight:700;flex-shrink:0}
+.cm-divider{height:1px;background:var(--border);margin:12px 0}
+.cm-coupon-wrap{display:flex;gap:8px;margin-bottom:6px}
+.cm-coupon-input{flex:1;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;transition:border-color .2s}
+.cm-coupon-input::placeholder{color:var(--muted)}
+.cm-coupon-input:focus{border-color:rgba(26,107,255,.5)}
+.cm-coupon-btn{padding:10px 14px;background:rgba(26,107,255,.15);border:1px solid rgba(26,107,255,.3);border-radius:10px;color:var(--blue-light);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.cm-coupon-btn:hover{background:rgba(26,107,255,.25)}
+.cm-coupon-status{font-size:.73rem;min-height:16px;margin-bottom:8px}
+.cm-coupon-ok{color:#10b981}
+.cm-coupon-err{color:#f87171}
+.cm-total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.cm-total-label{font-size:.82rem;color:var(--muted)}
+.cm-total-val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white)}
+.cm-foot{padding:16px 22px;border-top:1px solid var(--border)}
+.btn-pay-now{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),var(--blue-dark));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .25s;position:relative;overflow:hidden}
+.btn-pay-now:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(26,107,255,.4)}
+.btn-pay-now:disabled{opacity:.5;cursor:not-allowed;transform:none}
+/* SUCCESS MODAL */
+.success-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:700;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all .3s}
+.success-overlay.open{opacity:1;visibility:visible}
+.success-modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:400px;width:100%;text-align:center;animation:cmIn .35s cubic-bezier(.16,1,.3,1) both}
+.success-icon{width:64px;height:64px;border-radius:50%;background:rgba(16,185,129,.1);border:2px solid rgba(16,185,129,.3);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#10b981;margin:0 auto 18px}
+.success-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:8px}
+.success-sub{font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:20px}
+.success-link-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:8px;margin-bottom:14px;text-align:left}
+.success-link-text{flex:1;font-size:.76rem;color:var(--blue-light);word-break:break-all;font-family:monospace}
+.success-copy-btn{padding:5px 10px;background:rgba(26,107,255,.15);border:1px solid rgba(26,107,255,.3);border-radius:7px;color:var(--blue-light);font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.success-copy-btn:hover{background:rgba(26,107,255,.3)}
+.btn-dl{width:100%;padding:13px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all .2s;margin-bottom:10px}
+.btn-dl:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(16,185,129,.35)}
+.success-note{font-size:.72rem;color:var(--muted);line-height:1.5}
+
 </style>
 </head>
 <body>
@@ -316,14 +367,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);ove
 // Firebase Console → Project Settings → Your Apps
 // ══════════════════════════════════════════
 const firebaseConfig = {
-  apiKey: "AIzaSyAQPjL25efkxLnDUYqKiR6HJxZYYGvNh4A",
-  authDomain: "codexhub-b0501.firebaseapp.com",
-  databaseURL: "https://codexhub-b0501-default-rtdb.firebaseio.com",
-  projectId: "codexhub-b0501",
-  storageBucket: "codexhub-b0501.firebasestorage.app",
-  messagingSenderId: "243876360907",
-  appId: "1:243876360907:web:3acd490bec50375166614e",
-  measurementId: "G-LLVSJBBY7Q"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "G-XXXXXXXXXX"
 };
 
 let db = null;
@@ -423,11 +473,128 @@ function renderCart(){
   }).join('');
   document.getElementById('cartTotal').textContent='₹'+total.toLocaleString('en-IN');
 }
+// ── ZAPUPI CART PAYMENT ──
+const ZAP_KEY = "YOUR_ZAP_KEY";
+let cartFinalTotal = 0;
+let cartCouponDiscount = 0;
+
+ZapUPI.setPaymentCallbacks({
+  onSuccess: function(orderId) {
+    // Save each cart item as an order
+    cart.forEach(item => {
+      if(db) db.collection('orders').add({
+        productId:    item.id,
+        productTitle: item.title,
+        amount:       item.discountPrice || item.price,
+        ref:          orderId,
+        timestamp:    firebase.firestore.FieldValue.serverTimestamp(),
+        status:       'completed'
+      });
+    });
+    // Show success — use first item's download link
+    const firstItem = cart[0];
+    showCartSuccess(firstItem.downloadLink || '#');
+    // Clear cart
+    cart = [];
+    saveCart();
+    closeCheckoutModal();
+  },
+  onFailed: function(orderId) {
+    showToast('Payment failed. Please try again.', 'error');
+  },
+  onTimeout: function(orderId) {
+    showToast('Payment timed out. Please retry.', 'error');
+  },
+});
+
 function proceedCheckout(){
-  if(cart.length===0) return;
-  // For multi-item, redirect to first item's product page with cart flag
-  const firstItem = cart[0];
-  window.location.href=`product.html?id=${firstItem.id}&checkout=1`;
+  if(cart.length === 0) return;
+  cartCouponDiscount = 0;
+  cartFinalTotal = cart.reduce((s, i) => s + (i.discountPrice || i.price), 0);
+  // Render items
+  document.getElementById('cm-items-list').innerHTML = cart.map(item => {
+    const imgHtml = item.banner
+      ? `<div class="cm-item-img"><img src="${item.banner}" onerror="this.style.display='none'"></div>`
+      : `<div class="cm-item-img"><i class="fa-solid fa-box"></i></div>`;
+    return `<div class="cm-item">
+      ${imgHtml}
+      <div class="cm-item-name">${item.title}</div>
+      <div class="cm-item-price">₹${(item.discountPrice||item.price).toLocaleString('en-IN')}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('cm-coupon-input').value = '';
+  document.getElementById('cm-coupon-status').textContent = '';
+  updateCartTotal();
+  document.getElementById('checkoutOverlay').classList.add('open');
+  closeCart();
+}
+
+function updateCartTotal(){
+  const display = '₹' + cartFinalTotal.toLocaleString('en-IN');
+  document.getElementById('cm-total-display').textContent = display;
+  document.getElementById('cm-pay-price').textContent = display;
+}
+
+function closeCheckoutModal(){
+  document.getElementById('checkoutOverlay').classList.remove('open');
+}
+
+async function applyCartCoupon(){
+  const code = document.getElementById('cm-coupon-input').value.trim().toUpperCase();
+  const status = document.getElementById('cm-coupon-status');
+  if(!code){ status.className='cm-coupon-status cm-coupon-err'; status.textContent='Enter a coupon code.'; return; }
+  status.textContent='Checking...'; status.className='cm-coupon-status';
+  if(!db){ status.className='cm-coupon-status cm-coupon-err'; status.textContent='Firebase not connected.'; return; }
+  try{
+    const snap = await db.collection('coupons').where('code','==',code).where('active','==',true).get();
+    if(snap.empty){ status.className='cm-coupon-status cm-coupon-err'; status.textContent='Invalid or expired coupon.'; return; }
+    const coupon = snap.docs[0].data();
+    const base = cart.reduce((s,i) => s+(i.discountPrice||i.price), 0);
+    if(coupon.type==='percent'){ cartFinalTotal = Math.round(base*(1-coupon.value/100)); status.textContent='✓ '+coupon.value+'% off applied!'; }
+    else{ cartFinalTotal = Math.max(1, base-coupon.value); status.textContent='✓ ₹'+coupon.value+' off applied!'; }
+    status.className='cm-coupon-status cm-coupon-ok';
+    updateCartTotal();
+    showToast('Coupon applied! 🎉', 'success');
+  } catch(e){ status.className='cm-coupon-status cm-coupon-err'; status.textContent='Error: '+e.message; }
+}
+
+function cartPay(){
+  if(cartFinalTotal <= 0) return;
+  const btn = document.getElementById('cm-pay-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening payment...';
+  const productNames = cart.map(i => i.title).join(', ').replace(/[^a-zA-Z0-9 ]/g,'').substring(0, 50);
+  ZapUPI.createOrder(
+    {
+      zap_key:  ZAP_KEY,
+      order_id: 'SVX' + Date.now(),
+      amount:   String(cartFinalTotal),
+      remark:   productNames || 'SovitX Order',
+    },
+    {
+      onResponse: function(paymentUrl, orderId, data){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-lock"></i> Pay <span id="cm-pay-price">₹'+cartFinalTotal.toLocaleString('en-IN')+'</span>';
+        ZapUPI.loadPayment(paymentUrl);
+      },
+      onError: function(err){
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-lock"></i> Pay <span id="cm-pay-price">₹'+cartFinalTotal.toLocaleString('en-IN')+'</span>';
+        showToast('Order error: '+err, 'error');
+      },
+    }
+  );
+}
+
+function showCartSuccess(link){
+  document.getElementById('success-link-text').textContent = link;
+  document.getElementById('success-dl-btn').href = link;
+  document.getElementById('successOverlay').classList.add('open');
+}
+
+function copySuccessLink(){
+  const link = document.getElementById('success-link-text').textContent;
+  navigator.clipboard.writeText(link).then(()=>showToast('Link copied!','success'));
 }
 
 // ── TOAST ──
@@ -608,5 +775,53 @@ document.head.appendChild(styleEl);
 updateCartCount();
 initFirebase();
 </script>
+
+<!-- CHECKOUT MODAL -->
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+    <div class="cm-head">
+      <h3><i class="fa-solid fa-bag-shopping"></i> Order Summary</h3>
+      <div class="cm-close" onclick="closeCheckoutModal()"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="cm-body">
+      <div class="cm-items" id="cm-items-list"></div>
+      <div class="cm-divider"></div>
+      <div style="font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Have a Coupon?</div>
+      <div class="cm-coupon-wrap">
+        <input class="cm-coupon-input" id="cm-coupon-input" type="text" placeholder="Enter coupon code">
+        <button class="cm-coupon-btn" onclick="applyCartCoupon()">Apply</button>
+      </div>
+      <div class="cm-coupon-status" id="cm-coupon-status"></div>
+      <div class="cm-divider"></div>
+      <div class="cm-total-row">
+        <span class="cm-total-label">Total</span>
+        <span class="cm-total-val" id="cm-total-display">₹0</span>
+      </div>
+    </div>
+    <div class="cm-foot">
+      <button class="btn-pay-now" id="cm-pay-btn" onclick="cartPay()">
+        <i class="fa-solid fa-lock"></i> Pay <span id="cm-pay-price">₹0</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-modal">
+    <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+    <div class="success-title">Payment Successful! 🎉</div>
+    <div class="success-sub">Thank you! Your product is ready to download.</div>
+    <div class="success-link-box">
+      <span class="success-link-text" id="success-link-text">#</span>
+      <button class="success-copy-btn" onclick="copySuccessLink()"><i class="fa-solid fa-copy"></i> Copy</button>
+    </div>
+    <a class="btn-dl" id="success-dl-btn" href="#" target="_blank">
+      <i class="fa-solid fa-download"></i> Download Product
+    </a>
+    <div class="success-note">Save this link. Check your order in admin panel.</div>
+  </div>
+</div>
+
 </body>
 </html>
